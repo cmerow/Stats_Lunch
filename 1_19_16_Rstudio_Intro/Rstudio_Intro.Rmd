@@ -6,21 +6,27 @@ output: html_document
 ---
 These are just Cory's notes for the first course meeting, with some links
 
+**Download** the folder '1_19_16_Rstudio_Intro' for today's materials [here](https://github.com/cmerow/Stats_Lunch/tree/master/)
+
 # Overview
 
 * Panes
 * Open 'Stats_Lunch/1_19_16_Rstudio_Intro/Intro_to_IPMs_Exercises.r'
-  + this is just some working code to demo RStudio
+    + this is just some working code to demo RStudio
 * Tabs
 * Keystrokes
 * files vs. projects
 * Nice features
-  + syntax highlighting
-  + enviroment
-  + history
-  + buttons galore
-* Things I use: git, knitR/Sweave, package handling
-* A useful presentation: http://dss.princeton.edu/training/RStudio101.pdf
+    + syntax highlighting
+    + enviroment
+    + history
+    + buttons galore
+* Things I use
+    + git
+    + knitR/Sweave
+    + package handling
+    + cluster
+* A useful presentation [here](http://dss.princeton.edu/training/RStudio101.pdf)
 
 # Git
 * Git and Github
@@ -30,11 +36,12 @@ These are just Cory's notes for the first course meeting, with some links
 * Show my account
 * Show a package
 * Download here: https://git-scm.com/downloads
-* Create a repository, if you just can't wait...: https://help.github.com/articles/create-a-repo/
+* Create a repository, if you just [can't wait](https://help.github.com/articles/create-a-repo/)
 
 # R Markdown
-This doc was made with R markdown; open the .Rmd file to see how the code translates to the finished product
-https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf
+* This doc was made with R markdown; open the .Rmd file to see how the code translates to the finished product
+
+* R markdown [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
 
 ```{r}
 summary(cars)
@@ -48,13 +55,21 @@ plot(cars)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 * Compare to sweave/Latex
-* show 
+* show IPM book
 
 # Shiny
-* http://protea.eeb.uconn.edu:3838/wallace2/
+* A nice example (loads slowly) of [Wallace](http://protea.eeb.uconn.edu:3838/wallace2/)
 * someone should lead a week on this!
 
 # Package development
 
 * Show meteR
+    + github [link](https://github.com/cmerow/meteR)
+
+
+
+
+
+
+
 

@@ -1,0 +1,43 @@
+---
+title: "Syllabus"
+author: "Robi & Cory"
+date: "January 19, 2016"
+output: html_document
+---
+
+When: 2:00 pm Tuesdays, 2nd Floor Biopharm Fishbowl
+
+Organizers: Robert Bagchi and Cory Merow
+
+**Overview**: Statistics is essential a set of tools designed to make the best out of a bad data situation. When studying the natural world, we’re bound to have imperfect data. In this seminar, we’ll learn how to think about which models are appropriate for different data types and research questions, brainstorm on how to solve one another’s research problems, and teach general coding practices to simplify data/ coding gymnastics to put the R into Research.
+
+**Content**: We will meet to discuss general statistical techniques and problems and solutions related to participants own research. The seminar is an opportunity for participants to get feedback on their own analyses and seek help from both the group and the organizers. New techniques will be presented by the organizers or guest presenters in some weeks. These presentation will focus on streamlining modeling workflow (e.g. best coding practices, generating reports and reproducible research or parallel and cluster computing) as well as general techniques applicable to many studies (e.g. regression tools, Bayesian methods, spatial analyses or GIS in R).
+
+**Evaluation**: Each participant must present one problem related to their own research during the semester. As a group, we will discuss the problem and potential solutions. Presentations could include an initial description of the problem early in the semester and the resolution in a later session or can include different problems. Presenters should send (1) a short (1-2 paragraphs) description of the 
+problem, (2) a clean data file (that can be read into R with no further manipulation) and (3) R code with their existing analyses by Thursday of the preceding week. Grading will be based on (1) participation (no more than 2 sessions missed), (2) adequate preparation when presenting including sending materials in time.
+
+###Participant email list###
+
+robert.bagchi@uconn.edu, cory.merow@gmail.com
+
+## 1-19-16 Week 1 
+
+* Course overiew
+* Intro to Rstudio
+    + Git
+    + R Markdown
+  
+
+## 1-26-16 Week 2
+
+## 2-2-16 Week 3
+
+## 2-9-16 Week 4
+
+## 2-16-16 Week 5
+
+## 2-23-16 Week 6
+
+## Week 2
+
+## Week 2
