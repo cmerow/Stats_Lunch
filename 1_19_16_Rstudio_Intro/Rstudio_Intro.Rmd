@@ -5,7 +5,7 @@ date: "January 19, 2016"
 output: html_document
 runtime: shiny
 ---
-These are just Cory's notes for the first course meeting, with some links
+These  are just Cory's notes for the first course meeting, with some links
 
 **Download** the folder '1_19_16_Rstudio_Intro' for today's materials [here](https://github.com/cmerow/Stats_Lunch/tree/master/)
 
