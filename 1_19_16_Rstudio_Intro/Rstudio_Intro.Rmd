@@ -3,6 +3,7 @@ title: "Intro_to_Rstudio"
 author: "Cory"
 date: "January 19, 2016"
 output: html_document
+runtime: shiny
 ---
 These are just Cory's notes for the first course meeting, with some links
 
@@ -60,6 +61,18 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 # Shiny
 * A nice example (loads slowly) of [Wallace](http://protea.eeb.uconn.edu:3838/wallace2/)
 * someone should lead a week on this!
+
+```{r echo = FALSE}
+selectInput("data", "",
+ c("co2", "lh"))
+```
+See a plot:
+```{r echo = FALSE}
+renderPlot({
+ d <- get(input$data)
+ plot(d)
+})
+```
 
 # Package development
 
