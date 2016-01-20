@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  20 JAN 2016 09:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  20 JAN 2016 15:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -281,20 +281,20 @@ Overfull \hbox (95.43921pt too wide) in paragraph at lines 14--15
 639 _ b3a59601ba94400aabbe29025de83c10 .
  []
 
-LaTeX Font Info:    Try loading font information for TS1+aer on input line 22.
+LaTeX Font Info:    Try loading font information for TS1+aer on input line 21.
 (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
 File: ts1aer.fd 
 )
 LaTeX Font Info:    Font shape `TS1/aer/m/n' in size <10> not available
-(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 22.
+(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 21.
 
-Overfull \hbox (66.2536pt too wide) in paragraph at lines 23--24
+Overfull \hbox (66.2536pt too wide) in paragraph at lines 28--29
 []\T1/aer/m/n/10 tutorial: $\T1/aett/m/n/10 http : / / gosset . wharton . upenn
  . edu / teaching / 471 / EPFL-[]Sweave-[]powerdot .
  []
 
 
-Overfull \hbox (49.29935pt too wide) in paragraph at lines 24--25
+Overfull \hbox (49.29935pt too wide) in paragraph at lines 29--30
 \T1/aett/m/n/10 support . rstudio . com / hc / en-[]us / articles / 200552056-[
 ]Using-[]Sweave-[]and-[]knitr$ 
  []
@@ -306,11 +306,11 @@ Overfull \hbox (49.29935pt too wide) in paragraph at lines 24--25
 Here is how much of TeX's memory you used:
  2766 strings out of 493089
  39906 string characters out of 6134842
- 93445 words of memory out of 5000000
+ 94445 words of memory out of 5000000
  6204 multiletter control sequences out of 15000+600000
  15163 words of font info for 34 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,4n,23p,324b,220s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,4n,23p,473b,220s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/c
 m-super/cm-super-ts1.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
@@ -318,7 +318,7 @@ amsfonts/cm/cmbx12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmtt10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-s
 uper/sfrm1000.pfb>
-Output written on Sweave_and_knitR.pdf (1 page, 64336 bytes).
+Output written on Sweave_and_knitR.pdf (1 page, 65411 bytes).
 PDF statistics:
  30 PDF objects out of 1000 (max. 8388607)
  20 compressed objects within 1 object stream
