@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{url}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\textbf{You must download latex well before coming to class. It's a very large download.} Download options are here: 
+
+\url{https://latex-project.org/ftp.html}
+
+Restart Rstudio once you've installed latex, and it should recognize that Latex is installed. Try building a basic sweave document (5 min) following the instructions here:
+
+\url{http://rstudio-pubs-static.s3.amazonaws.com/639_b3a59601ba94400aabbe29025de83c10.html}
+
+You don't need to create the whole document according to these instructions; you've succeeded once you've entered a little text and compiled the pdf. If you have issues compiling this basic document, please troubleshoot for your system before class so we can focus our time on how to use Sweave/knitr.
+
+\section{Sweave}
+
+\textbf{Resources}
+\begin{itemize}
+  \item cheatsheet: \url{https://wch.github.io/latexsheet/latexsheet.pdf}
+  \item tutorial: \url{http://gosset.wharton.upenn.edu/teaching/471/EPFL-Sweave-powerdot.pdf}
+  \item very short Rstudio article on sweave and knitr integration: \url{https://support.rstudio.com/hc/en-us/articles/200552056-Using-Sweave-and-knitr}
+\end{itemize}
+
+
+\section{knitR}
+
+\textbf{Resources}
+\begin{itemize}
+  \item cheatsheet: \url{https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf}
+  \item tutorial: \url{http://kbroman.org/knitr_knutshell/}
+  \item an example doc: \url{http://yihui.name/knitr/demo/minimal/}
+\end{itemize}
+
+\end{document}

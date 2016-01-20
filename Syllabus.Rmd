@@ -29,10 +29,14 @@ robert.bagchi@uconn.edu, cory.merow@gmail.com
   
 
 ## 1-26-16 Week 2
+* Sweave
+* Knitr
 
 ## 2-2-16 Week 3
+* data gymnastics
 
 ## 2-9-16 Week 4
+* parallel computing
 
 ## 2-16-16 Week 5
 
