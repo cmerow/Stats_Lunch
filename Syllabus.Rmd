@@ -18,7 +18,7 @@ problem, (2) a clean data file (that can be read into R with no further manipula
 
 ###Participant email list###
 
-robert.bagchi@uconn.edu, cory.merow@gmail.com
+robert.bagchi@uconn.edu, cory.merow@gmail.com, HENRY.FRYE@UCONN.EDU, HEIDI.GOLDEN@UCONN.EDU, JACOB.KASPER@UCONN.EDU, MANETTE.SANDOR@UCONN.EDU, ljvillanueva@coquipr.com, pariksheet.nanda@uconn.edu, michael.hutson@uconn.edu, morgan.tingley@uconn.edu, paul.lewis@uconn.edu, chris.elphick@uconn.edu, timothy.farkas@gmail.com, kristen.nolting@uconn.edu
 
 ## 1-19-16 Week 1 
 
