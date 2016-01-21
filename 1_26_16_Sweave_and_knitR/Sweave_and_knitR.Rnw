@@ -8,6 +8,9 @@
 
 \url{https://latex-project.org/ftp.html}
 
+Robi mentioned:
+On using latex on windows - MikTex works pretty much out of the box - \url{http://miktex.org/download}
+
 Restart Rstudio once you've installed latex, and it should recognize that Latex is installed. Try building a basic sweave document (5 min) following the instructions here:
 
 \url{http://rstudio-pubs-static.s3.amazonaws.com/639_b3a59601ba94400aabbe29025de83c10.html}

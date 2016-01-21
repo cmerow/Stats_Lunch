@@ -29,16 +29,17 @@ robert.bagchi@uconn.edu, cory.merow@gmail.com, HENRY.FRYE@UCONN.EDU, HEIDI.GOLDE
   
 
 ## 1-26-16 Week 2
-* Sweave
-* Knitr
+* Sweave (Cory)
+* Knitr (Tim)
 
 ## 2-2-16 Week 3
-* data gymnastics
+* version control/git/github (Pariksheet)
 
 ## 2-9-16 Week 4
-* parallel computing
+* data gymnastics (Robi?)
 
 ## 2-16-16 Week 5
+* parallel computing? (Robi)
 
 ## 2-23-16 Week 6
 
