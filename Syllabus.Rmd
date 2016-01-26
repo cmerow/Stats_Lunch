@@ -36,7 +36,7 @@ robert.bagchi@uconn.edu, cory.merow@gmail.com, HENRY.FRYE@UCONN.EDU, HEIDI.GOLDE
 * version control/git/github (Pariksheet)
 
 ## 2-9-16 Week 4
-* data gymnastics (Robi?)
+* movement data (Heidi)
 
 ## 2-16-16 Week 5
 * parallel computing? (Robi)
