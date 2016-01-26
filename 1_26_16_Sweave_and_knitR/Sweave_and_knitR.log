@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  20 JAN 2016 15:09
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  26 JAN 2016 14:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -276,25 +276,25 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 10.
 
-Overfull \hbox (95.43921pt too wide) in paragraph at lines 14--15
+Overfull \hbox (95.43921pt too wide) in paragraph at lines 17--18
 []$\T1/aett/m/n/10 http : / / rstudio-[]pubs-[]static . s3 . amazonaws . com / 
 639 _ b3a59601ba94400aabbe29025de83c10 .
  []
 
-LaTeX Font Info:    Try loading font information for TS1+aer on input line 21.
+LaTeX Font Info:    Try loading font information for TS1+aer on input line 26.
 (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
 File: ts1aer.fd 
 )
 LaTeX Font Info:    Font shape `TS1/aer/m/n' in size <10> not available
-(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 21.
+(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 26.
 
-Overfull \hbox (66.2536pt too wide) in paragraph at lines 28--29
+Overfull \hbox (66.2536pt too wide) in paragraph at lines 41--42
 []\T1/aer/m/n/10 tutorial: $\T1/aett/m/n/10 http : / / gosset . wharton . upenn
  . edu / teaching / 471 / EPFL-[]Sweave-[]powerdot .
  []
 
 
-Overfull \hbox (49.29935pt too wide) in paragraph at lines 29--30
+Overfull \hbox (49.29935pt too wide) in paragraph at lines 42--43
 \T1/aett/m/n/10 support . rstudio . com / hc / en-[]us / articles / 200552056-[
 ]Using-[]Sweave-[]and-[]knitr$ 
  []
@@ -302,7 +302,7 @@ Overfull \hbox (49.29935pt too wide) in paragraph at lines 29--30
 [1
 
 {/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-(./Sweave_and_knitR.aux) ) 
+[2] (./Sweave_and_knitR.aux) ) 
 Here is how much of TeX's memory you used:
  2766 strings out of 493089
  39906 string characters out of 6134842
@@ -311,17 +311,17 @@ Here is how much of TeX's memory you used:
  15163 words of font info for 34 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  37i,4n,23p,473b,220s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/c
-m-super/cm-super-ts1.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmbx12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmtt10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/cm-s
-uper/sfrm1000.pfb>
-Output written on Sweave_and_knitR.pdf (1 page, 65411 bytes).
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvi
+ps/cm-super/cm-super-ts1.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
+cm-super/sfrm1000.pfb>
+Output written on Sweave_and_knitR.pdf (2 pages, 66950 bytes).
 PDF statistics:
- 30 PDF objects out of 1000 (max. 8388607)
- 20 compressed objects within 1 object stream
+ 33 PDF objects out of 1000 (max. 8388607)
+ 22 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  5 words of extra memory for PDF output out of 10000 (max. 10000000)
 
