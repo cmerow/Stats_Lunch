@@ -19,9 +19,19 @@ You don't need to create the whole document according to these instructions; you
 
 \section{Sweave}
 
+Things I mean to mention...
+
 \begin{itemize}
   \item Reproducible research
   \item Latex
+  \item NO spaces!
+  \item header, packages, commmands, figures
+  \item R: eval, echo, results. label chunks
+  \item tables (xtable) (can edit manually)
+  \item loads of files created...
+  \item errors are cryptic. many can be ignored.
+  \item Stangle
+  \item vignettes
 \end{itemize}
 
 \textbf{Resources}
@@ -46,6 +56,9 @@ Some nice tools:
   \item cheatsheet: \url{https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf}
   \item tutorial: \url{http://kbroman.org/knitr_knutshell/}
   \item an example doc: \url{http://yihui.name/knitr/demo/minimal/}
+  \item slideshows
+  \item shiny
+
 \end{itemize}
 
 \end{document}
