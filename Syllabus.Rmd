@@ -39,10 +39,10 @@ robert.bagchi@uconn.edu, cory.merow@gmail.com, HENRY.FRYE@UCONN.EDU, HEIDI.GOLDE
 * movement data (Heidi)
 
 ## 2-16-16 Week 5
-* parallel computing? (Robi)
+* Data manipulation (Robi?)
 
 ## 2-23-16 Week 6
 
-## Week 2
-
+## Week 7
+* parallel computing? (Robi)
 ## Week 2
