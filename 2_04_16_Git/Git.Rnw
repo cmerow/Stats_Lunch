@@ -40,6 +40,9 @@ One way to do this is check inside of RStudio via \textbf{Tools > Global Options
 If that SSH RSA Key field is blank, click the button to create the RSA key, an can you skip entering a passphrase.
 Windows users may encounter an error here since the Windows filesystem does not like to create anything starting with a dot, but one can create the \texttt{.ssh} directory with one command in \gb: \texttt{mkdir -p \~{}/.ssh}
 
+Now to add your SSH keys to \gh, sign in and go to \textbf{Settings > SSH Keys > Add SSH key} with the \textbf{Title} of whatever you call your computer and the \textbf{Key} with the contents of your \texttt{\~{}/.ssh/id\_rsa.pub} file (it's just a single line).
+You might find it easier to print the contents of the file in a terminal to be able to then copy it using \texttt{cat \~{}/.ssh/id\_rsa.pub}
+
 \subsection{15 minutes of practise}
 
 Get a taste of quick Git with the \gh web tutorial:
