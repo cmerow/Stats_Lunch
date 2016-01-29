@@ -1,0 +1,90 @@
+\documentclass{article}
+
+\usepackage[cm]{fullpage}
+\usepackage{hyperref}
+\usepackage{xspace}
+
+\title{\vspace{-4.5ex}Version control with Git}
+\author{Pariksheet}
+
+% Convenience macros
+\newcommand{\gh}{\emph{GitHub}\xspace}
+\newcommand{\gb}{\emph{Git Bash}\xspace}
+\newcommand{\rs}{\emph{RStudio}\xspace}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+\section{Setup before class}
+
+\subsection{Software}
+
+You will need:
+\begin{enumerate}
+\item Git installed,
+\item An account with \gh, and
+\item SSH keys
+\end{enumerate}
+
+It's possible that you have most of this already setup per Robi's \emph{GettingStarted} instructions, however you would likely need to complete the last item, namely registering your ssh keys with \gh.
+
+Registering your ssh keys with \gh allows you to upload your code, etc changes to \gh without having to type in your username and password each time.
+
+To check whether your keys are registered, see whether \gh greets you with your registered username per:
+\url{https://help.github.com/articles/testing-your-ssh-connection/}
+(Windows users should open the \gb terminal app; just hit the Windows key, type \gb and hit enter)
+
+If the terminal command output indicates that \gh does not recognize your username, check whether your SSH keys exist.
+One way to do this is check inside of RStudio via \textbf{Tools > Global Options\ldots > Git/SVN} and you should see SSH RSA Key with something like \texttt{\~{}/.ssh/id\_rsa} (basically, that field should not be blank).
+If that SSH RSA Key field is blank, click the button to create the RSA key, an can you skip entering a passphrase.
+Windows users may encounter an error here since the Windows filesystem does not like to create anything starting with a dot, but one can create the \texttt{.ssh} directory with one command in \gb: \texttt{mkdir -p \~{}/.ssh}
+
+\subsection{15 minutes of practise}
+
+Get a taste of quick Git with the \gh web tutorial:
+\url{https://try.github.io/}
+
+As you type out and run each command, scroll down to see your changes in the file browser (lower left) and read the advice box (lower right).
+
+If you don't understand everything that's happening, that's totally fine; we will discuss the concepts on Tuesday.
+
+\section{Tuesday's Lesson Plan}
+
+Getting started and on your way to using Git is mostly about learning the concepts of version control.
+To learn the concepts we will use Git from the terminal, since \rs's Git integration requires some moving around, which starts to make more sense after one is better acquainted with Git.
+
+We will cover:
+
+\begin{itemize}
+\item 9 essential commands for Git
+% git init
+% git clone
+% git status
+% git add / remove
+% git commit
+% git log
+% git diff
+% git checkout
+% git push / pull
+\item Collaborating on \gh: issues, comments, integrations
+\item (If we have time) Resolving conflicts, hooks
+\end{itemize}
+
+\section{Useful Links}
+
+\subsection{Keep these next to your pillow}
+
+\begin{itemize}
+\item Man pages: \url{http://www.git-scm.com/docs}
+\item Git Flight Rules: \url{https://github.com/k88hudson/git-flight-rules}
+\end{itemize}
+
+\subsection{Tutorials and Refreshers}
+
+\begin{itemize}
+\item Software Carpentry: \url{http://swcarpentry.github.io/git-novice/}
+\item Atlassian docs: \url{https://www.atlassian.com/git/}
+\end{itemize}
+
+\end{document}
