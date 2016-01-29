@@ -1,5 +1,0 @@
-\contentsline {section}{\numberline {1}Intro}{1}
-\contentsline {section}{\numberline {2}Getting R}{1}
-\contentsline {section}{\numberline {3}Rstudio}{2}
-\contentsline {section}{\numberline {4}latex}{2}
-\contentsline {section}{\numberline {5}Git}{3}

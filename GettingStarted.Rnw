@@ -97,7 +97,13 @@ On my computer (Windows) it's \url{C:/Program Files/Git/cmd/git.exe}
 
 I imagine it'll be something similar on everyone else's. You might not need this step if your path is set right during the Git installation, but that didn't seem to quite work for me.
 
-You then want to create and RSA key - click on the button and follow the instructions (\textit{disclosure} - I didn't do this through RStudio, so I don't know how hard it'll be - my guess is, not very.)
+You then want to create and RSA key - click on the button and follow the instructions.
+Windows users need to first create the .ssh directory:
+\begin{itemize}
+\item Click the Windows key and then type \textbf{Git Bash} to launch the program.
+\item In the shell, run the command \textbf{mkdir -p \~{}/.ssh}
+\item Now you can create the RSA key in RStudio.
+\end{itemize}
 
 Hit OK.
 
