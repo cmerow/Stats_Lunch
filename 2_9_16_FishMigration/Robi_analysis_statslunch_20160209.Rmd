@@ -1,0 +1,82 @@
+---
+title: "Heidi's data"
+author: "Robert Bagchi"
+date: "February 9, 2016"
+output: pdf_document
+---
+```{r, readdata}
+## first read in data
+fish <- read.csv("../data/StatsLunch_HGolden_02_09_2016.csv")
+summary(fish)
+head(fish)
+## couple of weird columns not in Heidi's dataset - removing
+
+fish <- fish[, -c(1:2)]
+head(fish)
+summary(fish)
+table(fish$antenna)
+```
+
+Reading through Heidi's emails and from talking to her, I think the aim here is to model whether or not an individual migrated is affected by whether it was trapped. We can get at this quite easily with a binomial glm.
+
+```{r, mod.mig}
+## Fit a model
+mod.mig <- glm(M.lake0.river1 ~ early_trap, data=fish, family=binomial)
+```
+
+So before interpreting, let us check some model diagnostics
+```{r, diagnostics}
+## overdispersion
+phi <- sum(resid(mod.mig, type='pearson')^2)/df.residual(mod.mig)
+phi ## approx 1, which is good, but binary data are not that good for testing this
+
+## Another test is whether the residuals show a trend against fitted values
+## Use a smoother to deal with discrete nature of binary values
+library(ggplot2)
+qplot(x=fitted(mod.mig), y=resid(mod.mig), geom=c('point', 'smooth'))
+## actually this highlights that because we have a binary predictor, we only have 
+## 2 values on the x axis - so need to be a little smarter
+qplot(x=fitted(mod.mig), y=resid(mod.mig), group=fitted(mod.mig), 
+      geom=c('boxplot')) ## Certainly more variation in the ones that migrated
+## than the ones that didn't, but difficult to be sure.
+## AUC is a useful statistic with binary data
+library(verification)
+roc.area(obs=mod.mig$y, pred=fitted(mod.mig))
+## AUC is 0.68 which isn't great, but is actually not that far from usual with these sorts of
+##data
+```
+
+We could go on, but probably not efficient to do so. Let's try and examine the outputs.
+
+```{r, examinemodel}
+summary(mod.mig)
+```
+
+Seems pretty clear that trapped individuals are less likely to migrate.
+
+So now onto the next question - given they have migrated, what is the effect on their probability of returning? In this case there is no need to look at the ones that didn't migrate, so subset the data for this analysis.
+
+```{r, returnmodel}
+mod.ret <- glm(R.spr0.fall1 ~ early_trap,data=fish, subset=M.lake0.river1==1,
+               family=binomial)
+
+qplot(x=fitted(mod.ret), y=resid(mod.ret), ##group=fitted(mod.ret), 
+      geom=c('point')) ## hmm, few 0s in the fitted.
+
+summary(subset(fish, M.lake0.river1==1))
+## so very few (6%) of returning fish were early trap
+fish.mig <- subset(fish, M.lake0.river1 ==1)
+with(fish.mig, table(early_trap, R.spr0.fall1)) ## none returned if trapped
+
+summary(mod.ret) ## and there is an associated drop in return probability 
+## but huge standard errors - the Hauck-Donner effect.
+```
+
+The Hauck Donner effect is really irritating - basically, if you have a category where the predicted response is exactly 0 or 1 (i.e. no or total success) then glms give you huge standard errors. 
+
+There are some solutions out there - try googling Hauck-Donner - perhaps for another day.
+
+
+Basically we have a situation where the overall response, will an individual migrate and return given it was trapped, is a two part problem. We have broken it down into the components migrate or not and given it migrated did it return or not. But can we predict what the effect of being trapped on the overall probability?
+
+The answer is yes - very simply we have $Pr(migrate \& return | trapped) = Pr(migrate, trapped) \cdot Pr(return | migrate, trapped)$. But can we get confidence intervals on that? Once again yes, but we will have to leave that for another time.
