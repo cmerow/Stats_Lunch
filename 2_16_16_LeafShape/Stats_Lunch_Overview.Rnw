@@ -25,23 +25,32 @@ The paleobotany literature consistently points towards the correlations between 
 <<loading_data>>=
 #Load directory that you have downloaded the 2011_leafdata.csv to
 setwd("/Users/henryfrye/Dropbox/IntellectualEndeavours/UConn/Research/Pelargonium_Margin_Project/LMP_RCodes_Data")
-leafdata <- read.csv(file = "2011_leafdata.csv" )
-attach(leafdata)
+leafdata <- read.csv(file = "data/2011_leafdata.csv" )
+attach(leafdata) ## I generaly don't do this - can create problems later on.
 @
 
 \section{Leaf Trait Example Data}
 For right now I'm only going to focus on two leaf traits: the laminar area and the number of teeth to interior perimeter ratio. Here are some boxplots of them:
 
 <<boxplots, plots=TRUE>>=
-boxplot(Lam_area, Number_of_Teeth._Interior_Perimeter)
+summary(leafdata[, c('Lam_area', 'Number_of_Teeth._Interior_Perimeter')])
+with(leafdata, boxplot(Lam_area, Number_of_Teeth._Interior_Perimeter))
 @
 
 I knew that the laminar area had a lot of outliers so I log transformed it to ameliorate that situation:
 
 <<boxplots2, plots=TRUE>>=
-boxplot(log_Lam_area, Number_of_Teeth._Interior_Perimeter)
+with(leafdata, boxplot(log_Lam_area, Number_of_Teeth._Interior_Perimeter))
 @
 
+<<rbplot1, plots=TRUE>>=
+library(ggplot2)
+names(leafdata)[c(23, 26)] <- c('toothA_IP', 'ToothN_IP') 
+ggplot(data=subset(leafdata, !is.na(Lam_area) &
+                     !is.na(Number_of_Teeth._Interior_Perimeter)), 
+       aes(y=Lam_area, x=Number_of_Teeth._Interior_Perimeter)) + geom_point() +
+  geom_smooth() + scale_y_continuous(trans = "log1p")
+@
 
 \section{Climate data}
 The climate variables we are interested in are the mean annual temperature (bio1) and the mean annual precipitation (bio12)
@@ -61,4 +70,37 @@ pairs(bio1~Number_of_Teeth._Interior_Perimeter + log_Lam_area + bio12, panel=pan
 All of this looks like a bit of a mess, and I haven't gotten much farther in examining the data since this is a side project of mine that I started when I got here in August. Based on the fact that these plots (and the plots of numerous other variables we have) were pretty messy it was loosely decided that there may not be much signal present in these correlations and that we should gather other data within the genus that is geographically located in another biome for comparison. 
 
 The lingering question with this data is how far do we need to go statistically in order to suggest that there is a lack of correlation.  I would have liked to run a PCA on the leaf traits and I'm sure there is a great deal more I need to do first with data exploration (e.g. I haven't check for colinearity and homogeniety with the variables).  Hopefully, this isn't too undeveloped to be workable for next week.
+
+\section{Robi Analysis}
+
+<< simpleggplot, plots=TRUE>>=
+ggplot(leafdata, aes(x=bio12, y=Lam_area, colour=bio1)) +
+  geom_point() + scale_y_continuous(trans='log') +
+  geom_smooth(method='gam')
+
+mod1 <- glm(Lam_area ~ bio1 + bio12, family=gaussian(link=log), data=leafdata)
+
+leafdata[duplicated(leafdata[,c('lon', 'lat')]), c('lon', 'lat')] <- 
+  leafdata[duplicated(leafdata[,c('lon', 'lat')]), c('lon', 'lat')] + 
+  matrix(runif(592*2, -1, 1), nc=2)
+library(nlme)
+mod2 <- gls(log(Lam_area) ~ bio1 + bio12, correlation = corExp(nugget=T, form=~ lon + lat), 
+            data=leafdata, na.action=na.omit)
+summary(mod2)
+
+plot(Variogram(mod2, form=~lon + lat, resType='n'))
+mod3 <- gls(log1p(toothA_IP) ~ bio1 + bio12, correlation = corExp(form=~ lon + lat), 
+            data=leafdata, na.action=na.omit)
+names(leafdata)
+summary(mod3)
+plot(mod3, 
+plot(Variogram(mod3, form=~lon + lat, resType='n'))
+## maybe need to think about INLA
+plot(mod2)
+plot(mod3)
+summary(mod2)
+summary(mod1)
+
+@
+
 \end{document}
