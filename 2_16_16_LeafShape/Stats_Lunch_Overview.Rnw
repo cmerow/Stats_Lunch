@@ -1,0 +1,64 @@
+\documentclass{article}
+
+\begin{document}
+
+\title{\textit{Pelargonium} Leaf Shape Project}
+\author{Henry Frye}
+\maketitle
+
+\section{Project Introduction}
+
+This project seeks to correlate the shapes of leaves within the genus \textit{Pelargonium} to the climate they are found in. It has long been noted by botanist that there are certain global trends in the shapes of leaves and climate. For example, leaves with large lamina tend to be found in regions with high precipitation while those in more arid climates tend to be smaller.  
+
+In more applied literature, paleobotanists use these "shape-climate" trends to extrapolate paleoclimate features from fossil leaf assemblages. All of the paleoclimate estimation methods correlate percentage of vegetation having a certain leaf trait to the climate. Only recently have researchers begun to examine trends on a more taxa specific level.  For example, our research group is taking a selection of species within a single genus (\textit{Pelargonium}) and seeing if the correlations are as strong as they are in correlations involing entire communities.
+
+\section{The Data}
+
+From previous work on other groups I have done, I suspect that the correlations that appear in vegetative communities may not hold as strongly with taxa based correlations (i.e. the null hypothesis to be true).
+
+After some basic data exploration, I'm not observing any clear signals in the data. Of course I am very much a stats novice. 
+
+\section{Loading the data}
+
+The paleobotany literature consistently points towards the correlations between leaf area to mean annual precipation (Laminar area ~ MAP) and amount of serration to mean annual temperature (Serration ~ MAT). This may be a good starting to point start playing with data.
+
+<<loading_data>>=
+#Load directory that you have downloaded the 2011_leafdata.csv to
+setwd("/Users/henryfrye/Dropbox/IntellectualEndeavours/UConn/Research/Pelargonium_Margin_Project/LMP_RCodes_Data")
+leafdata <- read.csv(file = "2011_leafdata.csv" )
+attach(leafdata)
+@
+
+\section{Leaf Trait Example Data}
+For right now I'm only going to focus on two leaf traits: the laminar area and the number of teeth to interior perimeter ratio. Here are some boxplots of them:
+
+<<boxplots, plots=TRUE>>=
+boxplot(Lam_area, Number_of_Teeth._Interior_Perimeter)
+@
+
+I knew that the laminar area had a lot of outliers so I log transformed it to ameliorate that situation:
+
+<<boxplots2, plots=TRUE>>=
+boxplot(log_Lam_area, Number_of_Teeth._Interior_Perimeter)
+@
+
+
+\section{Climate data}
+The climate variables we are interested in are the mean annual temperature (bio1) and the mean annual precipitation (bio12)
+
+<<boxplots3, plots=TRUE>>=
+boxplot(bio1, bio12)
+@
+
+\section{Examples of a Messy plot from this data}
+The following are some pair plots that I created with lines smoothed to the data.  
+
+<<pairsplot, plots=TRUE>>=
+pairs(bio1~Number_of_Teeth._Interior_Perimeter + log_Lam_area + bio12, panel=panel.smooth)
+@
+
+\section{Rough Conclusions}
+All of this looks like a bit of a mess, and I haven't gotten much farther in examining the data since this is a side project of mine that I started when I got here in August. Based on the fact that these plots (and the plots of numerous other variables we have) were pretty messy it was loosely decided that there may not be much signal present in these correlations and that we should gather other data within the genus that is geographically located in another biome for comparison. 
+
+The lingering question with this data is how far do we need to go statistically in order to suggest that there is a lack of correlation.  I would have liked to run a PCA on the leaf traits and I'm sure there is a great deal more I need to do first with data exploration (e.g. I haven't check for colinearity and homogeniety with the variables).  Hopefully, this isn't too undeveloped to be workable for next week.
+\end{document}

@@ -39,10 +39,13 @@ suman.neupane@uconn.edu, lthiberiol@gmail.com
 * movement data (Heidi)
 
 ## 2-16-16 Week 5
-* Data manipulation (Robi?)
+* Leaf traits (Henry)
 
 ## 2-23-16 Week 6
+* TBD (Manette)
 
 ## Week 7
-* parallel computing? (Robi)
-## Week 2
+ * TBD (Michael)
+
+## Week 8
+  TBD (Jacob)
