@@ -1,0 +1,182 @@
+\documentclass{article}
+
+\begin{document}
+
+\title{Do salamanders switch prey?}
+\author{Michael Hutson}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+
+\section{Introduction}
+I am looking for a signal of prey switching by larval marbled salamanders (\textit{Ambystoma opacum}), because such behavior could contribute to stabilizing their prey assemblage.
+
+I use Chesson's (1983) measure of prey preference, comparing the proportion of the diet comprised by a given prey type against the proportion that the prey type makes up of all available prey in the environment. 
+If a prey type becomes more frequent both in the environment and in the diet, this would not imply switching, and Chesson's preference value would similarly remain unchanged.
+However, if a prey type becomes more common in the environment and *even more so* in the diet, this would constitute a change in predator behavior in response to prey frequency. 
+I apply this measure to a set of feeding trials where I controlled the available food types, and measured how many of each type were eaten.
+
+In the data I have shared, the first few variables are probably peripheral for our purposes. The first important one is "weight", which is the measure for each salamander.
+
+For the remainder:\\
+"x.start" are the starting counts\\
+"x.end" are the leftover counts\\
+"x.eat" are the deduced number eaten\\
+"x.a" are the preference values given by Chesson's measure\\
+"x.e" are the preference values rescaled so that they range from -1 to +1\\
+(-1 = never eaten regardless of frequency, 0 = equivalent proportion in diet and in environment, and +1 = always eaten regardless of frequency)
+
+<<load data>>=
+data<-read.csv("data_short.csv",header=TRUE)
+@
+
+I first tried stepwise model simplification, testing the response with MANOVA:
+\section{Multivariate Multiple Regression}
+<<stewpise>>=
+# original stepwise model simplification approach
+with(data,{
+  trial.mlm1<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight*clado.start*cope.start)
+
+  # remove weight:clado.start:cope.start
+  trial.mlm2<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight*clado.start+weight*cope.start+clado.start:cope.start)
+  
+  # remove weight:clado.start
+  trial.mlm3<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight+clado.start+cope.start+weight:cope.start
+                 +clado.start:cope.start)
+  
+  # remove clado.start:cope.start
+  trial.mlm4<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight+clado.start+cope.start+weight:cope.start)
+
+  # trial.mlm4 is selected with this approach
+   car::Manova(trial.mlm4,type="II")
+})
+@
+
+However, to be consistent with using AIC for examining single-taxon responses, I switched to AIC for the multiple multivariate models.
+I compare the full set of combinations of variables, including two models (6 & 7) that have preference independent of prey frequency.
+<<AIC approach>>=
+with(data,{
+  trial.mlm1<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight*clado.start*cope.start)
+  trial.mlm2<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight*clado.start+weight*cope.start+clado.start:cope.start)
+  trial.mlm3<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight+clado.start+cope.start+weight:cope.start
+                 +clado.start:cope.start)
+  trial.mlm4<-lm(cbind(clado.e,cope.e,ostr.e)~
+                  weight+clado.start+cope.start+weight:cope.start)
+  trial.mlm5<-lm(cbind(clado.e,cope.e,ostr.e)~1)
+  trial.mlm6<-lm(cbind(clado.e,cope.e,ostr.e)~weight)
+  trial.mlm7<-lm(cbind(clado.e,cope.e,ostr.e)~weight+cope.start)
+  trial.mlm8<-lm(cbind(clado.e,cope.e,ostr.e)~weight+clado.start)
+  trial.mlm9<-lm(cbind(clado.e,cope.e,ostr.e)~weight+ostr.start)
+  trial.mlm10<-lm(cbind(clado.e,cope.e,ostr.e)~weight+cope.start+clado.start)
+  trial.mlm14<-lm(cbind(clado.e,cope.e,ostr.e)~weight*cope.start)
+  trial.mlm15<-lm(cbind(clado.e,cope.e,ostr.e)~weight*clado.start)
+  trial.mlm16<-lm(cbind(clado.e,cope.e,ostr.e)~weight*ostr.start)
+  trial.mlm17<-lm(cbind(clado.e,cope.e,ostr.e)~weight*clado.start+weight*cope.start)
+
+  models<-list(trial.mlm1,trial.mlm2,trial.mlm3,trial.mlm4,trial.mlm5,
+             trial.mlm6,trial.mlm7,trial.mlm8,trial.mlm9,trial.mlm10,
+             trial.mlm14,trial.mlm15,
+             trial.mlm16,trial.mlm17)
+
+  (unlist(lapply(models,extractAIC)))
+})
+@
+
+AIC supports models that include prey frequency over models that do not. Therefore the salamanders are sensitive to prey frequency. However, this doesn't tell us how salamanders respond to any single prey taxon, which is why I am also trying to look at the single taxon responses.
+
+\section{Single taxon responses}
+
+Here I will focus only on copepods, since these are exemplary of the problems I have been facing.
+
+When I looked at the response of cope.e to cope.start, there was clearly an uneven increase:
+<<preview of preference for copepods, fig=TRUE, echo=FALSE>>=
+with(data,{plot(cope.e~cope.start)})
+@
+
+My first instinct was to add a quadratic term.
+
+<<preference for copepods>>=
+with(data,{
+  cope.lm1<-lm(cope.e~weight*cope.start+I(cope.start^2))
+  cope.lm2<-lm(cope.e~weight+cope.start+I(cope.start^2))
+  cope.lm3<-lm(cope.e~cope.start+I(cope.start^2))
+  cope.lm4<-lm(cope.e~weight*cope.start)
+  cope.lm5<-lm(cope.e~weight+cope.start)
+  cope.lm6<-lm(cope.e~cope.start)
+  cope.lm7<-lm(cope.e~weight)
+  cope.lm8<-lm(cope.e~1)
+
+  cope.models<-list(cope.lm1,cope.lm2,cope.lm3,cope.lm4,cope.lm5,cope.lm6,
+                  cope.lm7,cope.lm8)
+
+  # per Burnham & Anderson, AICc is recommended when n/K<40
+
+  (aicc<-unlist(lapply(cope.models,AICcmodavg::AICc)))
+})
+@
+
+It looks like the best models are the ones that include cope.start+cope.start^2.
+But I am not sure if the residuals here are showing worrying signs of pattern.
+
+Here is the model with the lowest AICc value
+<<cope.lm2,figs.only=TRUE>>=
+with(data,{
+  cope.lm2<-lm(cope.e~weight+cope.start+I(cope.start^2))
+  plot(cope.lm2)
+})
+@
+
+and here is the other one within 2 pts:
+<<cope.lm3, fig=TRUE, echo=FALSE>>=
+with(data,{
+  cope.lm3<-lm(cope.e~cope.start+I(cope.start^2))
+  plot(cope.lm3)
+})
+@
+
+Moreover, possibly due to the distribution of the frequencies that I chose (testing just four points in sample space), I have a big gap between the lowest copepod frequency and the remaining values, and when I fit a quadratic model, I get a dip in the middle, and an *increase* at the lowest frequencies. I have no biological hypothesis to explain why salamanders could possibly prefer rare food types more, given their hunting mode. Therefore I believe this increase at low frequencies is totally spurious, emerging simply as an artifact of my sampling distribution.
+
+<<cope.lm3 figure, fig=TRUE, echo=FALSE>>=
+library(ggplot2)
+with(data,{
+  ggplot(data, aes(x = cope.start, y = cope.e)) +
+    geom_point()+
+    stat_smooth(method="lm",se=TRUE,fill=NA,formula=y~x+I(x^2),color="red")+
+    labs(x="Initial frequency",y="Preference")+
+    ggtitle("Preference for copepods - lm3")
+})
+@
+  
+I have tried log-transforming my variables, to no apparent effect (the pattern in residuals didn't change much, and AIC was unimpressed)
+<<with log-transformed frequencies, echo=FALSE>>=
+with(data,{
+cope.lm1<-lm(cope.e~weight*cope.start+I(cope.start^2))
+cope.lm2<-lm(cope.e~weight+cope.start+I(cope.start^2))
+cope.lm3<-lm(cope.e~cope.start+I(cope.start^2))
+cope.lm4<-lm(cope.e~weight*cope.start)
+cope.lm5<-lm(cope.e~weight+cope.start)
+cope.lm6<-lm(cope.e~cope.start)
+cope.lm7<-lm(cope.e~weight)
+cope.lm8<-lm(cope.e~1)
+cope.lm9<-lm(cope.e~weight+log(cope.start))
+cope.lm10<-lm(cope.e~weight*log(cope.start)+I((log(cope.start))^2))
+cope.lm11<-lm(cope.e~weight+log(cope.start)+I((log(cope.start))^2))
+cope.lm12<-lm(cope.e~log(cope.start)+I((log(cope.start))^2))
+
+cope.models<-list(cope.lm1,cope.lm2,cope.lm3,cope.lm4,cope.lm5,cope.lm6,
+                  cope.lm7,cope.lm8,cope.lm9,cope.lm10,cope.lm11,cope.lm12)
+(aicc<-unlist(lapply(cope.models,AICcmodavg::AICc)))
+})
+@
+
+\section{Next steps}
+So the last thing that I can think of trying is fitting an exponential model instead of a quadratic. An exponential curve would increase monotonically, as one might expect, and could fit with the increased slope of the preference curve at high prey frequencies. However, just as with the quadratic, the exponential curve would also start to predict values greater than 1, which is outside the allowable range of preference values. Also, I am not sure if it is possible to compare AIC values for different classes of models such as exponential vs quadratic.
+
+\end{document}
