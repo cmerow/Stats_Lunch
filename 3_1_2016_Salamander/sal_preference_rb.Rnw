@@ -53,8 +53,10 @@ with(data,{
 
   # trial.mlm4 is selected with this approach
    car::Manova(trial.mlm4,type="II")
+   
 })
 @
+
 
 However, to be consistent with using AIC for examining single-taxon responses, I switched to AIC for the multiple multivariate models.
 I compare the full set of combinations of variables, including two models (6 \& 7) that have preference independent of prey frequency.
@@ -92,6 +94,15 @@ with(data,{
 
 AIC supports models that include prey frequency over models that do not. Therefore the salamanders are sensitive to prey frequency. However, this doesn't tell us how salamanders respond to any single prey taxon, which is why I am also trying to look at the single taxon responses.
 
+<<muminanalysis>>=
+library(MuMIn)
+head(data)
+
+trial.mlm1<-lm(cbind(clado.e,cope.e,ostr.e)~
+                weight*clado.start*cope.start, data=data)
+summary(trial.mlm1)
+@
+
 \section{Single taxon responses}
 
 Here I will focus only on copepods, since these are exemplary of the problems I have been facing.
@@ -123,10 +134,10 @@ with(data,{
 })
 @
 
-It looks like the best models are the ones that include cope.start+cope.start^2.
-But I am not sure if the residuals here are showing worrying signs of pattern.
+It looks like the best models are the ones that include cope.start+cope.start\textsuperscript{2}. But I am not sure if the residuals here are showing worrying signs of pattern.
 
 Here is the model with the lowest AICc value
+
 <<cope.lm2,figs.only=TRUE>>=
 with(data,{
   cope.lm2<-lm(cope.e~weight+cope.start+I(cope.start^2))
@@ -134,8 +145,10 @@ with(data,{
 })
 @
 
+
 and here is the other one within 2 pts:
-<<cope.lm3, fig=TRUE, echo=FALSE>>=
+
+<<cope_lm3, fig=TRUE, echo=FALSE>>=
 with(data,{
   cope.lm3<-lm(cope.e~cope.start+I(cope.start^2))
   
@@ -146,7 +159,7 @@ with(data,{
 
 Moreover, possibly due to the distribution of the frequencies that I chose (testing just four points in sample space), I have a big gap between the lowest copepod frequency and the remaining values, and when I fit a quadratic model, I get a dip in the middle, and an *increase* at the lowest frequencies. I have no biological hypothesis to explain why salamanders could possibly prefer rare food types more, given their hunting mode. Therefore I believe this increase at low frequencies is totally spurious, emerging simply as an artifact of my sampling distribution.
 
-<<cope.lm3 figure, fig=TRUE, echo=FALSE>>=
+<<cope_lm3_figure, fig=TRUE, echo=FALSE>>=
 library(ggplot2)
 with(data,{
   ggplot(data, aes(x = cope.start, y = cope.e)) +
@@ -156,7 +169,6 @@ with(data,{
     ggtitle("Preference for copepods - lm3")
 })
 @
-  
 I have tried log-transforming my variables, to no apparent effect (the pattern in residuals didn't change much, and AIC was unimpressed)
 <<with log-transformed frequencies, echo=FALSE>>=
 with(data,{

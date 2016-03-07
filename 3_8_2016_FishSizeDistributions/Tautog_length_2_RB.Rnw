@@ -1,0 +1,123 @@
+\documentclass{article}
+\begin{document}
+
+\title{Length modeling for Tautog stock assessment}
+\author{Jacob Kasper}	    
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+
+\section{Introduction}
+I am producing a stock assessment for the marine fish Tautog (\textit{Tautoga onitis}), a member of the wrasse (family Labridae). Tautog range from the South Carolina to Nova Scotia, and are an important recreationally harvest fin-fish, particularly in Long Island Sound. Unlike most marine fin-fish, Tautog are primarily harvested by the recreational sector (90\%) which poses interesting management questions and opportunities.
+A stock assessment is an estimate of the size of the spawning stock biomass for a species in a given area. In the past, the stock assessments for Tautog have divided the coast into 4 regions, the most northern two being CT-RI-MA and NY-NJ. This is likely a problem for Long Island Sound as this method splits the body of water in half. In an attempt to better manage the species, we are producing a stock assessment for Tautog in Long Island Sound.
+The stock assessment is being conducted with the collaboration of CT DEEP, New York Department of Environmental Conservation, NJ Department of Environmental Protection and RI Department Of Environmental Management. We are also reciving logistical support from National Marine Fisheries Service. NMFS and NOAA have published an accepted stock assessment tool, the Age Structured Assessment Program (ASAP). ASAP is based in C+ code and uses AD model builder as a backbone. ASAP is a "flexible forward program that allows the assumption of separability of gear specific
+fishing mortality into year and age components to be relaxed and change over time, as such it can be applied to many species and areas." ASAP is a GUI program that uses a text file which contains all input data. 
+
+Input data for this stock assessment includes some parameters which have been previously calculated and some which need to be estimated/gathered from various sources. Parameters/data which are established include: natural mortality (M), scientific survey indicies. Parameters/data that needs to be collected includes: recreational harvest, commercial harvest, appropriate age-at-length and weight-at-length parameters.
+
+Fortunately, there are relatively strong estimates of the recreational catch (this includes length). This data is based on surveys conducted by state and federal agencies which involve port side monitoring and telephone interviews of fishers. The data collected from the commercial sector is not as robust and the catch-at-length distribution from the recreational catch needs to be used to estimate the commercial catch. This is the task I am working on now and what I will present below. The recreational length data I am using is not complete. It only accounts for CT. I am still waiting for the NY length data and will add it to this model in the future.
+
+<<load data>>=
+library("MASS");library (bbmle)
+
+len<-read.csv("mrip_TAUTOG_length_freq_CT_YEARS_play.csv")
+head(len)
+@
+
+
+\section{Theory}
+Due to the low and inconsistent nature of commercial sampling for tautog, recreational harvest 
+length frequencies have been used as a proxy for commercial landings. 
+commercial length data, since the commercial catch at length was estimated using 
+recreational catch length frequency data at the annual state level
+
+Lets try fitting a line to the whole dataset,eventhough in the end it has to be annually
+
+<<overall_model,  fig=TRUE>>=
+len$freq<-floor(len$No_at_Length)       ##frequencies were estimated after scaling from
+##stratified sampling. so need to round down
+
+len.exp <- len[rep(1:nrow(len), len[["freq"]]), ] ##expand frequencies to measurements
+len.exp$freq<-NULL ##remove freq column to avoid confusion
+len.exp<-len.exp[complete.cases(len.exp$Length_in),] ##remove NA
+
+#######gamma#######
+len.gamma <- fitdistr(len.exp$Length_in, densfun = "gamma",  start=list(shape = 1, rate = 0.1),lower=0.001)## produces no warnings
+len.g<-rgamma(length(len.exp$Length_in), shape=len.gamma$estimate["shape"], rate=len.gamma$estimate["rate"])
+##hist(len.exp$Length_in, prob=TRUE, main="gamma")
+
+#######lognomral#######
+## this would be a good choice because values are all >0
+len.lognormal<- fitdistr(len.exp$Length_in, densfun = "lognormal") ## try a lognormal
+##hist(len.exp$Length_in, prob=TRUE, main="lognormal")
+
+#######normal#########
+len.normal<- fitdistr(len.exp$Length_in, densfun = "normal")
+
+hist(len.exp$Length_in, prob=TRUE, main="CT rec Tautog length (cm) 1984:2015")#, probability = TRUE) 
+##nice historgram
+lines(density(len.g), col="blue", lwd=2)
+lines(dlnorm(0:max(len.exp$Length_in), mean=len.lognormal$estimate["meanlog"], sd=len.lognormal$estimate["sdlog"]),col="red", lwd=3)
+lines(dnorm(0:max(len.exp$Length_in), mean=len.normal$estimate["mean"], sd=len.normal$estimate["sd"]), col="yellow", lwd=3)
+legend("topright", c("gamma","lognormal","normal"), col=c("blue","red","yellow"), lwd=3)
+mn <- len.gamma$estimate["shape"]*len.gamma$estimate["rate"]
+
+##how to make a function for the NLL of a distribution?
+## using a slimmed down data set here.
+dim(len.exp)
+min(table(len.exp$Year))
+
+
+## we want to do this for all years, so let us do a stratified sample for now.
+len.new <- do.call('rbind', lapply(split(len.exp, f=len.exp$Year), 
+                                   function(yeardat){
+                                     sub <- yeardat[sample(1:nrow(yeardat), 50),]
+                                     return(sub)
+                                     }))
+
+nllgammalen <- function(shape, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, 
+                        b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, 
+                        b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, len, yearMat){
+  
+  betax <- c(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, 
+             b11, b12, b13, b14, b15, b16, b17, b18, b19, b20,
+             b21, b22, b23, b24, b25, b26, b27, b28, b29, b30,
+             b32, b32) ## this is horrible code, but what I had to do to make it work
+  predmeanlen <- meanLen(betax=betax, yearMat = yearMat) 
+  
+  pred.rate <- shape/predmeanlen
+  lL <- sum(dgamma(x=len, shape=shape, rate=pred.rate, log=T))
+  nlL <- -lL
+  return (nlL)}
+
+
+len.new$YearFac <- factor(len.new$Year)
+nlevels(len.new$YearFac)
+yearMat <- model.matrix(~YearFac, data=len.new)
+
+meanLen <- function(betax, yearMat){
+  ## exp(X%*%beta) to keep all lengths positive
+  predMean <- exp(as.vector(yearMat %*% betax))
+  return(predMean)
+}
+
+dim(yearMat)
+
+## this is ugly, but makes mle2 accept multiple values for mean.
+## it refuses to accept vectors
+start.mean <- log(len.gamma$estimate["shape"]/len.gamma$estimate["rate"])
+start.mean <- do.call('list', as.list(rep(rep(start.mean, ncol(yearMat)))))
+names(start.mean) <- paste0('b', 1:32)
+
+g.start<-c(len.gamma$estimate["shape"],
+              start.mean)
+
+mod <- mle2(nllgammalen, start = g.start, 
+            data=list(yearMat=yearMat,len=len.new$Length_in))  
+mod 
+warnings() ## our bounds are obviously not working right,
+## but we're part way there
+
+@
+
+\end{document}
