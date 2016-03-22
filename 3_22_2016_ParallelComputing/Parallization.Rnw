@@ -2,7 +2,8 @@
 % preamble 
 % load packages 
 \usepackage{amsmath}
-
+\usepackage{csquotes}
+\usepackage{Sweave}
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
@@ -61,14 +62,18 @@ system.time(result <- sapply(1:20, function(i){
 @
 
 
-\section{running parallel tasks on your computer}
+\section{Running parallel tasks on your computer}
 
 Parallel support is provided by the parallel package, which ships with base R. It includes a number of functions that mirror the apply series of functions, for example, sapply and lapply. The parallel versions of these functions are parSapply and parLapply.
 
 <<parallel_demo, eval=TRUE, echo=TRUE>>=
 library(parallel)
-## first set up  a cluster - asking for 3 cpus
-cl <- makeCluster(spec = 3)
+
+## You can find the number of cores on your machine with
+detectCores()
+
+## first set up  a cluster - asking for 6 cpus
+cl <- makeCluster(spec = 6)
 
 ## we then have to pass each of those nodes the function
 clusterExport(cl, varlist = 'invertmatrix')
@@ -84,8 +89,144 @@ stopCluster(cl)
 @
 
 
-The reason it's not 1/3 rd the time is there is some overhead when using parallel processing - the computer needs to pass data among different parts of the memory and so on. Still, if you are doing this on a machine with 10s of cores, you get quite substantial speedup!
+The reason it's not 1/6 rd the time is there is some overhead when using parallel processing - the computer needs to pass data among different parts of the memory and so on. You will see a greater improvement if you do multiple iterations per cpu. The upshot is that the optimum number of CPUs is usually somewhat less than 1 CPU per iteration.
+
+\section{A few extensions and tips}
+
+Using parallel code is actually pretty simple. There are a few thigns taht it is worth knowing as you start getting set up. The first thing to know is that you not only have to export the objects from your working environment, like functions, but you also have to load libraries on each of the remote CPUs. Below is an example, using the mvrnorm function from  the MASS package.
+
+<<cluster_eval, eval=TRUE, echo=TRUE>>=
+
+## If we don't have the package loaded, this doesn't work
+print(try(mvrnorm(5, mu=rep(0, 5), Sigma=diag(5))))
+
+library(MASS)
+mvrnorm(5, mu=rep(0, 5), Sigma=diag(5)) ## now it does
+
+cl <- makeCluster(spec = 3)
+## we then have to pass each of those nodes the function
+try(parSapply(cl, 1:3, function(i) mvrnorm(5, mu=rep(0, 5), Sigma=diag(5))), 
+    silent=FALSE)
+## gives us the same error
+## you can do the same function on every CPU by doing 
+clusterEvalQ(cl, library(MASS)) ## which loads the library on every cpu
+
+## now
+parSapply(cl, 1:3, function(i) mvrnorm(5, mu=rep(0, 5), Sigma=diag(5)))
+## works
+
+## This does produce a bit of a mess because sapply tries to simplify your result
+## by default. To fix this we can do
+parSapply(cl, 1:3, function(i) mvrnorm(5, mu=rep(0, 5), Sigma=diag(5)), 
+          simplify=FALSE)
+## Which I prefer
+## or also use parLapply
+parLapply(cl, 1:3, function(i) mvrnorm(5, mu=rep(0, 5), Sigma=diag(5)))
+
+## Which is an alternative apply type function
+
+stopCluster(cl)
+
+@
 
 
+The other very useful thing to know is how to deal with multiple arguments. For example, in all the cases here, we only had one input that we were handing to the function to be run on each CPU (indeed, we actually had no arguments, and just had an index). The function in the apply family for multiple arguments is mapply, and the parallel version is clusterMap. This is how we use it
+
+<<clusterMap, echo=TRUE, eval=TRUE>>=
+## lets continue with the mvrnorm example, but this time let the mean and variance
+##  be different on different clusters
+
+test.mu <- list(rep(1, 5), rep(0, 5), rep(-1, 5))
+test.sigma <- list(diag(5), diag(5)/2, diag(5)*2)
+
+cl <- makeCluster(spec = 3)
+clusterEvalQ(cl, library(MASS)) ## repeat each time you set up a new cluster
+clusterMap(cl=cl, fun=mvrnorm, mu=test.mu, Sigma=test.sigma, 
+           MoreArgs=list(n=5), SIMPLIFY=FALSE)
+
+## Things that don't vary are handed as a named list called MoreArgs.
+## Things that vary should be handed over as lists, and all 
+## have to be of the same length.
+@
+
+\section{Randomization}
+
+One \textit{important} detail when running tasks that involve randomization is making sure that your random number generator is set up okay. This is particularly important if you are setting the random number seed for your analyses to be repeatable. Here is a quote from the vignette from the Parallel package:
+
+\begin{displayquote}
+When an R process is started up it takes the random-number seed from the object .Random.seed in a saved workspace or constructs one from the clock time and process ID when random-number generation is first used (see the help on RNG). Thus worker processes might get the same seed because a workspace containing .Random.seed was restored or the random number generator has been used before forking: otherwise these get a non-reproducible seed (but with very high
+probability a different seed for each worker).
+\end{displayquote}
+
+Here is an example of how it can all go wrong.
+
+<<wrong_randomization, eval=TRUE, echo=TRUE>>=
+##rMean <- function(n) mean(rnorm(n))
+set.seed(123)
+sapply(1:5, function(i) rnorm(3))
+
+## if we repeat this, we get the same result
+set.seed(123)
+sapply(1:5, function(i) rnorm(3))
+
+set.seed(123)
+cl <- makeCluster(spec = 5)
+parSapply(cl = cl, 1:5, FUN=function(i) rnorm(3))
+stopCluster(cl)
+
+## different results
+set.seed(123)
+cl <- makeCluster(spec = 5)
+##clusterExport(cl, 'rMean')
+##parSapply(cl = cl, 1:5, FUN=function(i) rMean(n=100))
+parSapply(cl = cl, 1:5, FUN=function(i) rnorm(3))
+stopCluster(cl)
+
+## And the results are unrepeatable.
+
+## The wrong solution is to put set seed in the function
+cl <- makeCluster(spec = 5)
+parSapply(cl = cl, 1:5, FUN=function(i) {
+  set.seed(123)
+  rnorm(3)
+})
+stopCluster(cl) ## Not good - same numbers each time
+@
+
+So the results are different from the non-parallel analysis and also not repeatable among different runs. Perhaps that is not a problem, but given that the random seed is basically being set haphazardly on each CPU, and the exact way in which it is set is dependent on the options set on that machine, you *could* run into some very serious problems if you just steam ahead. The solution is to set up a random number stream that is shared by the different CPUs. The worst thing you can do is to set up your code so you set the seed within each parallel call. You basically end up with no variation.
+
+We first need to change the kind of random number generator. I don't know why, but the default, \Sexpr{RNGkind()} doesn't work so well in parallel processes.
+
+
+<<RNGstream, echo=TRUE, eval=TRUE>>=
+## First set the kind of random number generator
+RNGkind("L'Ecuyer-CMRG")
+set.seed(123)
+sapply(1:5, function(i) rnorm(3))
+##We get different results from the previous chunk as 
+## we are using a different RNG
+
+set.seed(123)
+sapply(1:5, function(i) rnorm(3))
+## But repeatable differences
+cl <- makeCluster(spec=5)
+clusterSetRNGStream(cl = cl, iseed = 123)
+parSapply(cl = cl, 1:5, FUN=function(i) rnorm(3))
+stopCluster(cl)
+## Which are a different but
+cl <- makeCluster(spec=5)
+clusterSetRNGStream(cl = cl, iseed = 123)
+parSapply(cl = cl, 1:5, FUN=function(i) rnorm(3))
+stopCluster(cl)
+## The same as another instance.
+
+## Note that this is dependent of the number of cppus
+cl <- makeCluster(spec=3)
+clusterSetRNGStream(cl = cl, iseed = 123)
+parSapply(cl = cl, 1:5, FUN=function(i) rnorm(3))
+stopCluster(cl)
+
+## Gives you different numbers
+@
 
 \end{document}
