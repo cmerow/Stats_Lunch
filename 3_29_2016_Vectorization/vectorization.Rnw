@@ -1,0 +1,64 @@
+\documentclass{article}
+
+\usepackage{Sweave}
+\SweaveOpts{concordance=TRUE, tidy=T, width=4}
+\usepackage{hyperref}
+%\usepackage[cm]{fullpage}
+
+\title{Vectorization in R}
+\author{Pariksheet Nanda}
+
+\begin{document}
+\maketitle
+
+\section{Why vectorize?}
+
+The problem with using any high level programming languages is losing sight of how the language authors intend for you to use the language efficiently.
+Most often the conversation around vectorization is about improving the program's execution speed.
+However writing vectorized code is also beautiful, correct, code; to see why this is, we need to take a step back.
+
+There are many ways to write programs to achieve a particular goal.
+In fact, this freedom to reach one's goal by several means is what makes programming an art form; there is enough room to express one's particular style without being restricted to a single `correct' answer.
+However, while multiple programs can produce the same result, some programs are more correct than others.
+Compare these 2 result equivalent code snippets from chapter 3 of the \emph{R Inferno}\footnote{url{http://www.burns-stat.com/pages/Tutor/R\_inferno.pdf}}:
+
+<<>>=
+x <- rnorm(100)
+@
+
+
+<<>>=
+# C-style summation
+lsum <- 0
+for(i in 1:length(x)) {
+  lsum <- lsum + log(x[i])
+}
+@
+
+<<>>=
+# Vectorized summation
+lsum <- sum(log(x))
+@
+
+More than being `correct', code can be beautiful when it pays attention to 3 ideas:
+\begin{description}
+  \item[Concise]
+  As the saying goes, software is complete not when nothing more can be added, but when nothing can be taken away.
+  \item[Human legible]
+  Variable names and logic should be quickly understood.
+  Avoid obscure shorthand.
+  Comments are useful, but prefer to write code that reads so easily that comments are not needed to explain individual lines.
+  Code appearance should follow standard practices and `idioms'.
+  \item[Unit Tested]
+  Bugs are an inevitable consequence of a growing program line count.
+  Most functions should have tests to prove that they, infact, produce their intended results.
+  Instead of throwing away short checks in the interpreter, they are preserved as unit tests so that bugs don't creep back in as code is sculpted and improved.
+\end{description}
+
+Thus, in addition to efficiency, vectorization is also about supporting these 3 ideas to writing beautiful and correct code.
+
+%\section{Learning Objectives}
+
+%\section{Learning Goals}
+
+\end{document}
