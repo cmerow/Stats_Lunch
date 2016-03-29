@@ -3,7 +3,8 @@
 \usepackage{Sweave}
 \SweaveOpts{concordance=TRUE, tidy=T, width=4}
 \usepackage{hyperref}
-%\usepackage[cm]{fullpage}
+\usepackage{amsmath}
+\usepackage[cm]{fullpage}
 
 \title{Vectorization in R}
 \author{Pariksheet Nanda}
@@ -20,7 +21,7 @@ However writing vectorized code is also beautiful, correct, code; to see why thi
 There are many ways to write programs to achieve a particular goal.
 In fact, this freedom to reach one's goal by several means is what makes programming an art form; there is enough room to express one's particular style without being restricted to a single `correct' answer.
 However, while multiple programs can produce the same result, some programs are more correct than others.
-Compare these 2 result equivalent code snippets from chapter 3 of the \emph{R Inferno}\footnote{url{http://www.burns-stat.com/pages/Tutor/R\_inferno.pdf}}:
+Compare these 2 result equivalent code snippets from chapter 3 of the \emph{R Inferno}\footnote{\url{http://www.burns-stat.com/pages/Tutor/R\_inferno.pdf}}:
 
 <<>>=
 x <- rnorm(100)
@@ -57,8 +58,85 @@ More than being `correct', code can be beautiful when it pays attention to 3 ide
 
 Thus, in addition to efficiency, vectorization is also about supporting these 3 ideas to writing beautiful and correct code.
 
-%\section{Learning Objectives}
+\section{Concepts}
+\begin{enumerate}
+\item Application Programming Interface (API)
+\item Vectors, List, Matrices, Data.Frames
+\item Logical conditionals (\&, |, !)
+\item Vector Recycling Rule (a.k.a broadcasting in NumPy)
+\item Profiling code with system.time()
+\end{enumerate}
 
-%\section{Learning Goals}
+\section{Exercises}
+\begin{enumerate}
+\item Overload the multiplication operator to concatenate strings.
+<<eval=FALSE>>=
+"abc" * "def" # should give "abcdef"
+@
+
+\item Subtract each element in the following array from it's left neighbor.
+<<eval=FALSE>>=
+x = seq(4, 7) # should get "1 1 1"
+@
+
+\item Find the derivative of this function only using vectorization
+<<eval=FALSE>>=
+x = seq(0, 2*pi, 0.01)
+y = sin(x)
+plot(x, y, type='l')
+@
+
+\item Write an averaging filter using vectorization and apply it to the parrot sample image, using the following pattern of averaging 5 neighboring pixels:
+
+$
+\begin{matrix}
+0 & 1 & 0 & 0 & \ldots & 0 \\
+1 & 1 & 1 & 0 & \ldots & 0 \\
+0 & 1 & 0 & 0 & \ldots & 0 \\
+0 & 0 & 0 & 0 & \hdots & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & 0 \\
+0 & 0 & 0 & 0  & 0 & 0
+\end{matrix}
+$
+
+To do this you will beed the EBImage package:
+
+<<eval=FALSE>>=
+source("https://bioconductor.org/biocLite.R")
+biocLite("EBImage")
+@
+
+Then open the sample image with:
+
+<<eval=False>>=
+library(EBImage)
+f = system.file("images", "sample.png", package="EBImage")
+img = readImage(f)
+display(img)
+@
+\end{enumerate}
+
+\section{References}
+
+\begin{enumerate}
+\item Vectorization by Alyssa Frazee
+\url{http://alyssafrazee.com/vectorization.html}
+\item Vectorization by Noam Ross
+\url{http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html}
+\item Vectoriation in R Inferno
+\url{http://www.burns-stat.com/pages/Tutor/R\_inferno.pdf}
+\item DPLYR Library 
+\url{http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf}
+\item Some essential built-in functions (see pages 1 and 2)
+\url{https://cran.r-project.org/doc/contrib/Short-refcard.pdf}
+\item Smaller subset of built-in functions (see pages 1 and 2)
+\url{https://www.ualberta.ca/~ahamann/teaching/renr690/R\_Cheat\_Data.pdf}
+\item Matrix multiplication
+\url{http://www.statmethods.net/advstats/matrix.html}
+\item Long list of functions grouped by category and operation
+\url{http://mathesaurus.sourceforge.net/octave-r.html}
+\item Reading R source code
+\url{http://stackoverflow.com/a/19226817}
+\end{enumerate}
 
 \end{document}
