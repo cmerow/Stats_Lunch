@@ -1,0 +1,61 @@
+\documentclass{article}
+
+\usepackage{Sweave}
+\SweaveOpts{concordance=TRUE, tidy=T, width=4}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage[cm]{fullpage}
+
+\title{geo in R}
+\author{Jacob Kasper}
+
+\begin{document}
+\maketitle
+
+\section{Why geo?}
+
+Geo was developed for spataial plotting in and around Iceland by Höskuldur Björnsson at
+the Marine Research Institute in Iceland. It is useful package which is easy to learn and 
+has a whole host of functions which are quite intuative. Also is the geoextras package which 
+expands on the functionality of geo. Geo is currently maintained and hosted on github
+https://github.com/Hafro/geo
+
+<<>>=
+x <- rnorm(100)
+@
+
+
+<<>>=
+#install.packages("devltools")
+## I had to install Rtools
+##install rtools 3.3 http://cran.r-project.org/bin/windows/Rtools
+#install.packages("maps")
+#devtools::install_github("hafro/geo")
+#library("geo")
+#install.packages("geoextras", repos="http://r-forge.r-project.org", type="source")
+
+library(mapdata); library(geo);library(geoextras)
+options(bg="white")
+geoplot(xlim = list(lat = c(40, 43), lon = c(-68, -72)), 
+        country = "none", grid = F, cex=.5)
+geoworld(database = "worldHires", allowed.size = 1e6)
+##can use two different database, worldHires is more informative
+geopoints(41,-70, col="red", cex=2)
+geolines(c(41, 42),c(-70, -69), col="blue")
+arcdist(41, -70, 42, -69) ## defaults to nmi
+Arrow(list(lat=c(41, 41.5), lon=c(-70.5, -71)), angle = 15, col = 2)
+geolegend(list(lat=c(42, 42.5), lon=c(-70.5, -71)), "Legend", bty = "n")
+
+@
+\section{What else can geo do?}
+Data maniuplations
+
+geo.Split.poly(): Split a polygon into a list
+geoconvert(): Convert between different representations of latitude and longitude, namely       degrees-minutes-decimal minutes and decimal degrees.
+These are just a few of the useful functions, there are many many more build into this package, 
+some of which are mentioned in this table. 
+ \begin{center}
+      \includegraphics{geo-commands.png}
+    \end{center}
+
+\end{document}
