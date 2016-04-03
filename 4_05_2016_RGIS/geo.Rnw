@@ -20,12 +20,11 @@ has a whole host of functions which are quite intuative. Also is the geoextras p
 expands on the functionality of geo. Geo is currently maintained and hosted on github
 https://github.com/Hafro/geo
 
-<<>>=
-x <- rnorm(100)
-@
 
 
-<<>>=
+
+
+<<geo, plots=TRUE>>=
 #install.packages("devltools")
 ## I had to install Rtools
 ##install rtools 3.3 http://cran.r-project.org/bin/windows/Rtools
@@ -34,24 +33,40 @@ x <- rnorm(100)
 #library("geo")
 #install.packages("geoextras", repos="http://r-forge.r-project.org", type="source")
 
-library(mapdata); library(geo);library(geoextras)
+
+library(mapdata)
+library(geo)
+library(geoextras)
+
 options(bg="white")
-geoplot(xlim = list(lat = c(40, 43), lon = c(-68, -72)), 
-        country = "none", grid = F, cex=.5)
+geoplot(xlim = list(lat = c(40, 43), lon = c(-68, -72)),
+        country = "none", cex=.5, projection = "Lambert", grid=FALSE)
+my.grd <- list(lat=seq(40,43, by=1), lon=seq(-68,-72, by=-1))
+geogrid (my.grd, lwd=.5, col="lightgrey")
 geoworld(database = "worldHires", allowed.size = 1e6)
+##x <- geodefine() ##or use any dataframe.....you need to click on the plot to use this function, it makes a dataframe then press esc to save the dataframe
+x<-data.frame(lat=c( 40.1, 41 , 41 , 40.1 ), lon=c(-71, -71, -69, -69))
+geopolygon(x, col="orange")
+labloc<-list(lat=c(41,40),lon=c(-70,-69))
+geolegend(labloc, c("my area"), col=c("deeppink"), pt.cex=2, pch=20, bty="n")
+
 ##can use two different database, worldHires is more informative
 geopoints(41,-70, col="red", cex=2)
 geolines(c(41, 42),c(-70, -69), col="blue")
 arcdist(41, -70, 42, -69) ## defaults to nmi
 Arrow(list(lat=c(41, 41.5), lon=c(-70.5, -71)), angle = 15, col = 2)
-geolegend(list(lat=c(42, 42.5), lon=c(-70.5, -71)), "Legend", bty = "n")
-
 @
+
+
+
 \section{What else can geo do?}
 Data maniuplations
 
 geo.Split.poly(): Split a polygon into a list
-geoconvert(): Convert between different representations of latitude and longitude, namely       degrees-minutes-decimal minutes and decimal degrees.
+geoconvert(): Convert between different representations of latitude and longitude, namely degrees-minutes-decimal minutes and decimal degrees.
+geoconvert.1() ##Vector of decimal-minute-decimal minutes and returns converted value in decimal degrees
+geoconvert.2() ##Convert from decimal degrees to degrees, minutes and fractional minutes representation (DDMMmm) of lat or lon.
+
 These are just a few of the useful functions, there are many many more build into this package, 
 some of which are mentioned in this table. 
  \begin{center}
