@@ -14,7 +14,7 @@
 
 \section{Why geo?}
 
-Geo was developed for spataial plotting in and around Iceland by Höskuldur Björnsson at
+Geo was developed for spataial plotting in and around Iceland by H?skuldur Bj?rnsson at
 the Marine Research Institute in Iceland. It is useful package which is easy to learn and
 has a whole host of functions which are quite intuative. Also is the geoextras package which
 expands on the functionality of geo. Geo is currently maintained and hosted on github
@@ -24,7 +24,7 @@ https://github.com/Hafro/geo
 
 <<geo4,plots=TRUE>>=
 #<<fig=TRUE,echo=FALSE>>=
-# install.packages("devltools")
+# install.packages("devtools")
 # I had to install Rtools
 # install rtools 3.3 http://cran.r-project.org/bin/windows/Rtools
 # install.packages("maps")
