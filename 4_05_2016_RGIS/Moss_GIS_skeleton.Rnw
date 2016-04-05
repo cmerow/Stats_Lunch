@@ -74,7 +74,7 @@ plot(dem)
 #Now, let's change the look and overlay our plots
 plot(moss)
 lines(hydro, col="blue")
-lines(roads, col="gray", lty=5)
+# lines(roads, col="gray", lty=5) #commented out cuz slow
 
 #But GIS data are *more* than just maps. They also contain data
 data.frame(roads)
@@ -82,7 +82,8 @@ data.frame(hydro)
 
 #And these things can be queried
 plot(roads, col = "#00000080")
-lines(roads[which(roads$FULLNAME=="State Hwy 195"), ], col = "red", lwd = 3)
+#error
+#lines(roads[which(roads$FULLNAME=="State Hwy 195"), ], col = "red", lwd = 3)
 
 #--------------------------------------------------------------------------------
 #Importing point data
@@ -111,7 +112,7 @@ plot(pts)
 # It looks a little different, but most importantly we can now overlay it on our data
 plot(moss)
 lines(hydro, col = "blue")
-lines(roads, col = "#00000080", lty = 2)
+#lines(roads, col = "#00000080", lty = 2)
 text(pts, labels = 1:79, cex = 0.7)
 
 #--------------------------------------------------------------------------------
@@ -135,12 +136,12 @@ utm.prj <- CRS("+proj=utm +zone=18 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 # Create 3 new objects, that re-project our layers from lat-lon to UTM
 moss.utm <- spTransform(moss, utm.prj)
 roads.utm <- spTransform(roads, utm.prj)
-hydro.utm <- 
+#hydro.utm <- 
 
 # Check: If they don't all plot together, you've made an error
 plot(moss.utm)
-plot(hydro.utm, add = T, col = "blue", lwd = 3)
-lines(roads.utm, col = "#00000080", lty = 2)
+#plot(hydro.utm, add = T, col = "blue", lwd = 3)
+#lines(roads.utm, col = "#00000080", lty = 2)
 
 #--------------------------------------------------------------------------------
 # Defining a grid
@@ -284,7 +285,7 @@ pts.utm$elevation <-
 export <- data.frame(pts.utm)
 
 # And save it
-setwd("../")
+#setwd("../")
 write.csv(export, file = "Moss_gis_covars.csv")
 @
 
