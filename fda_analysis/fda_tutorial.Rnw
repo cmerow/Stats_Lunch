@@ -1,0 +1,58 @@
+\documentclass{article}
+
+\title{}
+\begin{document}
+
+\section{About This Document}
+
+This document assumes that the reader is aware of what function data (fd) is.  The primary purpose here is to explain how to create function data in R and to give a teaser of what possible analyses can be conducted.
+
+\section{Step 1: Create Basis functions}
+
+The first step in fd analysis is to create a series of basis functions that will try to best capture the functional component of the raw data. Basis functions are linear combinations of related functions.  To give a non-mathematical framework, think of basis functions as storage bins for a set of related functions that potentially describe your data.  
+
+In function data analysis, the two most common types of basis systems used are the Fourier basis and the B-spline basis. In general, Fourier is used for periodic data while B-splines are used for non-periodic data. For examples, you may choose to use a Fourier to provide basis functions for a relationship between annual photoperiod vs. plant growth and choose a B-spline system for the irregular rate of migration for a population. There are several other basis systems, such as wavelets and polynomials, which can be explored as well. 
+
+In R, basis functions are created using the create.basis set of commands. Typically these will be either create.bspline.basis() or create.fourier.basis().
+
+These functions allow for a reasonable amount of user input if one wants to modify how the basis functions are being created.  Let's talk about a few of these in the case of the bspline system:
+
+\subsection{rangeval}
+
+This is the range of data in which the functional data object will be evaluated.  For example, lets say you had weather data taken over 60 days.  You may specify your rangeval as 0:60.  R allows for numerics or non-numerics (with a bit of modification).
+
+\subsection{argvals}
+
+I think of this as your x-axis, or independent variable, over which you are conducting your function data analysis. For example, in the weather data example you may consider the day number your argvals while the mean temperature as the response.  Note that argvals should match in length to your rangeval.
+
+\subsection{nbasis}
+
+nbasis is the number of basis functions that you'll be using. The number of functions you will want to use will depend on your data.  For example, you may have relatively simple data without a lot of curves and a few functions will suffice. However, in the case of data where there are several different curves (think of a light spectra, or if someone tracked your handwriting and plotted it.)  you will want to use more curves to better fit the underlying functionality of the data.
+
+Where these functions are placed depends on where you set your breaks, also called knots.  See subsection on breaks.
+
+\subsection{norder}
+
+This is the order of the functions that you are using.  The default in bsplines is order 4 creating a cubic function. The reason 4 is the default is that it allows you to create up to second derivatives which are used in evaluating the curvature the data for placing knots and examining your data resolution.  You can use higher or lower orders depending on your own data, but 4 is not a bad starting place
+
+\subsection{breaks}
+
+The reason that function data analysis can describe very complicated datasets is because it splits them up into chunks that can be described by individual functions.  The boundaries of these chunks are known as breaks or knots. By defaul create.bsplines.basis will set the breaks evenly throughout your data.  You may want to set the breaks more arbitrarily (for example in areas where there are high amounts of curvature), but that is up to your data.
+
+
+You can check that the basis object you created above is a basis object with is.basis() or class(). 
+
+\section{Step 2: Smoothing Basis Functions}
+
+Once we have created a series of basis function, we will want to figure out which one of the functions best fits the data within each of the breaks.  Think back to our bin of functions we made with the basis systems.  We know want to reach into that bin and choose the best function that will match (think "smooth")  the inherent functionality of the data.  
+
+There are a few ways to determine the best fit. The most commonly used is linear fitting with ordinary least squares, but maximum likelihood is also used.  Additionally, a bayesian framework can be applied but is not for the computationally faint of heart. 
+
+
+The command for smoothing data in R is smooth.basis() or smooth.basisPar().  The latter is a lower level function that allows for more customization of the smoothing parameters. At the minimum you need to tell R in the smooth function what your argument values are (argvals=), what the raw data is (y=), and what basis functions you are using (fdobj=).  smooth.basisPar() also allows for roughness penalties to be set (lambda=).
+
+
+
+
+
+\end{document}
