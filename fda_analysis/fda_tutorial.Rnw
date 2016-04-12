@@ -51,7 +51,33 @@ There are a few ways to determine the best fit. The most commonly used is linear
 
 The command for smoothing data in R is smooth.basis() or smooth.basisPar().  The latter is a lower level function that allows for more customization of the smoothing parameters. At the minimum you need to tell R in the smooth function what your argument values are (argvals=), what the raw data is (y=), and what basis functions you are using (fdobj=).  smooth.basisPar() also allows for roughness penalties to be set (lambda=).
 
+\section{3: A Demo of Fourier and Bsplines Without Data}
 
+The following codes are for empty Fourier and Bsplines basis systems. This is to demonstrate some of the difference between the two. This example is taken from the create.test demo in the FDA package.  There is no vignette for FDA at the present.
+
+\section{For B-splines}
+<<spline, echo=TRUE, fig=TRUE>>=
+library("fda")
+if(exists('basisobj'))remove(basisobj)
+# creating a bspline basis with only defaults, no raw data.
+basisobj = create.bspline.basis()
+# This is going to show us the settings and attributes of the bspline we created
+basisobj
+# remove this basis object so that we can create something
+plot(basisobj)
+remove(basisobj)
+@
+
+
+\section{For Fourier}
+<<fourier, echo=TRUE, eval=TRUE>>=
+basisobj = create.fourier.basis()
+basisobj
+plot(basisobj)
+
+@
+
+\end{document}
 
 
 
