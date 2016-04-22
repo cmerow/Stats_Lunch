@@ -36,16 +36,20 @@ xxx.a is Chesson's alpha, a measure of preference
 xxx.e is the electivity index \(Chesson's alpha rescaled to run from -1 to +1\)
 
 \section{Data Exploration}
-<<predrisk,plots=TRUE,echo=FALSE>>=
+<<cladopredrisk,fig=TRUE,echo=FALSE>>=
 library(ggplot2)
 
-cladoplot<-qplot(data=data, x=clado.start, y=clado.eat, geom=c('point'))
+cladoplot<-qplot(data=data, x=clado.start, y=clado.eat, geom=c('point'),main="cladoceran predation risk")
 cladoplot
+@
 
-copeplot <- qplot(data=data, x=cope.start, y=cope.eat, geom=c('point'))
+<<copepredrisk,fig=TRUE,echo=FALSE>>=
+copeplot <- qplot(data=data, x=cope.start, y=cope.eat, geom=c('point'),main="copepod predation risk")
 copeplot
+@
 
-ostrplot <- qplot(data=data, x=ostr.start, y=ostr.eat, geom=c('point'))
+<<ostrpredrisk,fig=TRUE,echo=FALSE>>=
+ostrplot <- qplot(data=data, x=ostr.start, y=ostr.eat, geom=c('point'),main="ostracod predation risk")
 ostrplot
 @
 
@@ -128,34 +132,42 @@ fit2.ostr<-  optim(fn = nllH2Binom, par = ostrstartpars2, m=data$ostr.eat,
                   upper=list(a=1, h=1e10))
 
 # extract negative log-likelihoods
-fit2.clado
+fit2.clado$par;fit2.clado$value
   # nll = 150.6
-fit2.cope
+fit2.cope$par;fit2.cope$value
   # nll = 943.0
-fit2.ostr
+fit2.ostr$par;fit2.ostr$value
   # nll = 218.3
 @
 
 Type II has a greater likelihood for all three taxa.
 
 Let's see the Type 2 curves superimposed against the data:
-<<type2_figs, plots=TRUE>>=
+<<holling2n>>=
 holling2N <- function(N, a, h){ 
   predN <- holling2(N=N, a=a, h=h)*N
   return(predN)}
+@
 
+<<clado_type2,fig=TRUE,echo=FALSE>>=
 cladoplot + stat_function(fun=holling2N, 
                          args=list(a=fit2.clado$par["a"], h=fit2.clado$par["h"])) +
   theme_classic()
+@
 
+<<cope_type2,fig=TRUE,echo=FALSE>>=
 copeplot + stat_function(fun=holling2N, 
                           args=list(a=fit2.cope$par["a"], h=fit2.cope$par["h"])) +
   theme_classic()
+@
 
+<<ostr_type2,fig=TRUE,echo=FALSE>>=
 ostrplot + stat_function(fun=holling2N, 
                           args=list(a=fit2.ostr$par["a"], h=fit2.ostr$par["h"])) +
   theme_classic()
 @
+Better. But I suspect a type 3 response would be a further improvement.
+
 
 \section{Modeling a Type 3 Functional Response}
 In a Type 3 functional response, the per-capita mortality rate for prey increases at first, but eventually decreases again as the predator is saturated with prey. The limit is again 1/h prey per predator per unit of time, where h is handling time.
@@ -221,19 +233,25 @@ fit3.ostr$value # lowest
 
 Let's see how it looks in the plots:
 
-<<type3_plots,plots=TRUE>>=
+<<holling3N>>=
 holling3N <- function(N, c, d){ 
   predN <- holling3(N=N, c=c, d=d)*N
   return(predN)}
+@
 
+<<clado_type3,fig=TRUE,echo=FALSE>>=
 cladoplot + stat_function(fun=holling3N, 
                           args=list(c=fit3.clado$par["c"], d=fit3.clado$par["d"])) +
   theme_classic()
+@
 
+<<cope_type3,fig=TRUE,echo=FALSE>>=
 copeplot + stat_function(fun=holling3N, 
                          args=list(c=fit3.cope$par["c"], d=fit3.cope$par["d"])) +
   theme_classic()
+@
 
+<<ostr_type3,fig=TRUE,echo=FALSE>>=
 ostrplot + stat_function(fun=holling3N, 
                          args=list(c=fit3.ostr$par["c"], d=fit3.ostr$par["d"])) +
   theme_classic()
