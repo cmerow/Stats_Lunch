@@ -1,0 +1,310 @@
+\documentclass{article}
+
+\begin{document}
+\title{Do salamanders switch prey? pt II}
+\author{Michael Hutson}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+
+\section{Introduction}
+
+I am looking for a signal of prey switching by larval marbled salamanders (\textit{Ambystoma opacum}), because such behavior could contribute to stabilizing their prey assemblage.
+
+I ran 24-hr feeding trials with the salamanders, allowing them to feed on varying combinations of cladocerans, copepods, and ostracods (always 450 total zooplankton), and measured how many zooplankton were consumed.
+
+Since my hypothesis is that the salamanders switch their preferences towards the most abundant prey type, I am trying to fit Type 1, Type 2, and Type 3 functional responses to my feeding trial data to see whether the Type 3 (switching) response is supported over the others.
+
+This would be a good place to mention also that Robi's stats notes and guidance have been immensely helpful with this analysis.
+
+\section{Data}
+
+<<load data>>=
+data<-read.csv("data_shorter.csv",header=TRUE)
+@
+
+In the data file:
+
+weight is salamander weight
+
+xxx.start is the initial abundance of a given zooplankton type
+
+xxx.eat is how many were lost and presumed eaten during the feeding trial
+
+xxx.a is Chesson's alpha, a measure of preference
+
+xxx.e is the electivity index \(Chesson's alpha rescaled to run from -1 to +1\)
+
+\section{Data Exploration}
+<<predrisk,plots=TRUE,echo=FALSE>>=
+library(ggplot2)
+
+cladoplot<-qplot(data=data, x=clado.start, y=clado.eat, geom=c('point'))
+cladoplot
+
+copeplot <- qplot(data=data, x=cope.start, y=cope.eat, geom=c('point'))
+copeplot
+
+ostrplot <- qplot(data=data, x=ostr.start, y=ostr.eat, geom=c('point'))
+ostrplot
+@
+
+All zooplankton experience greater mortality when their initial abundance is greater. For cladocerans the increase appears to be proportional to abundance. For copepods, mortality accelerates at higher densities. For ostracods, mortality is near 100\% at low abundances, but saturates at around 100 individuals.
+
+\section{Modeling a Type 1 Functional Response}
+Predation risk is constant, so increasing initial abundance should result in proportional increase in mortality (constant attack rate, a)
+
+<<type1>>=
+nllH1Binom <- function(pars, m, N){
+  p <- a # get the predicted probability 
+  lL <- dbinom(x = m, prob = p, size = N, log=T) # for given attack rate, how many eaten?
+  nlL <- -sum(lL)
+  return(nlL)}
+
+# estimate start parameter, a (attack rate)
+(cladostartpar1 <- ("a"=sum(data$clado.eat)/sum(data$clado.start)))
+
+(copestartpar1 <- ("a"=sum(data$cope.eat)/sum(data$cope.start)))
+
+(ostrstartpar1 <- ("a"=sum(data$ostr.eat)/sum(data$ostr.start)))
+
+
+# fit models using optim()
+fit1.clado <- optim(fn = nllH1Binom, par = cladostartpar1, m=data$clado.eat, 
+                    N = data$clado.start)
+fit1.cope<- optim(fn = nllH1Binom, par = copestartpar1, m=data$cope.eat, 
+                  N = data$cope.start)
+fit1.ostr<-  optim(fn = nllH1Binom, par = ostrstartpar1, m=data$ostr.eat, 
+                   N = data$ostr.start)
+
+# extract negative log likelihood values for fit models
+fit1.clado$value
+  # nll = 180.3
+fit1.cope$value
+  # nll = 999.4
+fit1.ostr$value
+  # nll = 354.9
+@
+RStudio complains about the unreliability of Nelder-Mead method under these circumstances, but what do I know about this yet?
+
+\section{Modeling a Type 2 Functional Response}
+
+In the Type 2 functional response, mortality initially increases with prey abundance (constant attack rate, a), but at high enough densities the predator becomes overwhelmed or saturated, and cannot consume any more prey per unit time. The maximum number of prey consumed is 1/h, where h = handling time.
+
+<<type2>>=
+holling2 <- function(N, a, h){
+  m <- a/(1 + a*N*h) # this is the type II fxn response
+  return(m)}
+
+
+nllH2Binom <- function(pars, m, N){
+  p <- holling2(N=N, a=pars['a'], h=pars['h']) # get the predicted probability 
+  lL <- dbinom(x = m, prob = p, size = N, log=T) # for given attack rate, how many eaten?
+  nlL <- -sum(lL)
+  return(nlL)}
+
+
+cladostartpars2 <- c("a" = sum(data$clado.eat)/sum(data$clado.start), 
+               "h" = 1/100)
+cladostartpars2
+
+copestartpars2 <- c("a" = sum(data$cope.eat)/sum(data$cope.start), 
+                    "h" = 1/270)
+copestartpars2
+
+ostrstartpars2 <- c("a" = sum(data$ostr.eat)/sum(data$ostr.start), 
+               "h" = 1/100)
+ostrstartpars2
+
+# use optim()
+fit2.clado <- optim(fn = nllH2Binom, par = cladostartpars2, m=data$clado.eat, 
+                  N = data$clado.start, method="L-BFGS-B",lower=list(a=1e-5, h=1e-5), 
+                  upper=list(a=1, h=1e10)) #bound a & h within plausible ranges
+fit2.cope<- optim(fn = nllH2Binom, par = copestartpars2, m=data$cope.eat, 
+                 N = data$cope.start, method="L-BFGS-B",lower=list(a=1e-5, h=1e-5), 
+                 upper=list(a=1, h=1e10))
+fit2.ostr<-  optim(fn = nllH2Binom, par = ostrstartpars2, m=data$ostr.eat, 
+                  N = data$ostr.start, method="L-BFGS-B",lower=list(a=1e-5, h=1e-5), 
+                  upper=list(a=1, h=1e10))
+
+# extract negative log-likelihoods
+fit2.clado
+  # nll = 150.6
+fit2.cope
+  # nll = 943.0
+fit2.ostr
+  # nll = 218.3
+@
+
+Type II has a greater likelihood for all three taxa.
+
+Let's see the Type 2 curves superimposed against the data:
+<<type2_figs, plots=TRUE>>=
+holling2N <- function(N, a, h){ 
+  predN <- holling2(N=N, a=a, h=h)*N
+  return(predN)}
+
+cladoplot + stat_function(fun=holling2N, 
+                         args=list(a=fit2.clado$par["a"], h=fit2.clado$par["h"])) +
+  theme_classic()
+
+copeplot + stat_function(fun=holling2N, 
+                          args=list(a=fit2.cope$par["a"], h=fit2.cope$par["h"])) +
+  theme_classic()
+
+ostrplot + stat_function(fun=holling2N, 
+                          args=list(a=fit2.ostr$par["a"], h=fit2.ostr$par["h"])) +
+  theme_classic()
+@
+
+\section{Modeling a Type 3 Functional Response}
+In a Type 3 functional response, the per-capita mortality rate for prey increases at first, but eventually decreases again as the predator is saturated with prey. The limit is again 1/h prey per predator per unit of time, where h is handling time.
+
+<<type3>>=
+holling3 <- function(N, c, d){
+  m <- c*N/(d^2 + N^2)
+  return(m)}
+# (this is the type III fxn response)
+# c = 1/h = max#eat, d=c/a = max#eat/a
+
+nllH3Binom <- function(pars, m, N){
+  p <- holling3(N=N, c=pars['c'], d=pars['d']) # get the predicted probability 
+  lL <- dbinom(x = m, prob = p, size = N, log=T) # for given attack rate, how many eaten?
+  nlL <- -sum(lL)
+  return(nlL)}
+
+
+# starting parameters
+cladostartpars3 <- c("d" = 100 * sum(data$clado.start)/sum(data$clado.eat), "c" = 100)
+cladostartpars3
+
+copestartpars3 <- c("d" = 270 * sum(data$cope.start)/sum(data$cope.eat), "c" = 270)
+copestartpars3
+
+ostrstartpars3 <- c("d" = 100 * sum(data$ostr.start)/sum(data$ostr.eat), "c" = 100)
+ostrstartpars3
+
+# fit the type 3 model
+fit3.clado <- optim(fn = nllH3Binom, par = cladostartpars3, m=data$clado.eat, 
+                   N = data$clado.start)
+fit3.cope<- optim(fn = nllH3Binom, par = copestartpars3, m=data$cope.eat, 
+                 N = data$cope.start)
+fit3.ostr<-  optim(fn = nllH3Binom, par = ostrstartpars3, m=data$ostr.eat, 
+                  N = data$ostr.start)
+
+# extract negative log-likelihoods
+fit3.clado$value
+  # nll = 146.3
+fit3.cope$value
+  # nll = 805.3
+fit3.ostr$value
+  # nll = 174.3
+@
+
+Across all three taxa, the Type 3 functional response has the lowest negative log-likelihood.
+
+Here's the roundup:
+<<nll_compar>>=
+fit1.clado$value
+fit2.clado$value
+fit3.clado$value # lowest
+
+fit1.cope$value
+fit2.cope$value
+fit3.cope$value # lowest
+
+fit1.ostr$value
+fit2.ostr$value
+fit3.ostr$value # lowest
+@
+
+
+Let's see how it looks in the plots:
+
+<<type3_plots,plots=TRUE>>=
+holling3N <- function(N, c, d){ 
+  predN <- holling3(N=N, c=c, d=d)*N
+  return(predN)}
+
+cladoplot + stat_function(fun=holling3N, 
+                          args=list(c=fit3.clado$par["c"], d=fit3.clado$par["d"])) +
+  theme_classic()
+
+copeplot + stat_function(fun=holling3N, 
+                         args=list(c=fit3.cope$par["c"], d=fit3.cope$par["d"])) +
+  theme_classic()
+
+ostrplot + stat_function(fun=holling3N, 
+                         args=list(c=fit3.ostr$par["c"], d=fit3.ostr$par["d"])) +
+  theme_classic()
+
+@
+
+\section{Multinomial}
+Nothing much to show here, for now. So far I have been trying single-taxon response curves, but ultimately I want to look at all three taxa simultaneously. Stay tuned?
+
+\section{Confidence Intervals}
+This is where I am currently trying to struggle through. It appears optim() does not allow for easy extraction of confidence intervals, so I have repeated my analysis of the type 2 functional response using the mle2() method. However, either I am making a mistake somewhere or there is something about the shape of my data that is throwing errors, and leading RStudio to tell me hurtful things like that my Hessian is ill-behaved.
+
+<<mle2>>=
+
+library(bbmle)
+
+  # mle2 takes list, not vector
+cladostartpars.mle2 <- list("a" = sum(data$clado.eat)/sum(data$clado.start), 
+                            "h" = 1/100)
+copestartpars.mle2 <- list("a" = sum(data$cope.eat)/sum(data$cope.start), 
+                           "h" = 1/270)
+ostrstartpars.mle2 <- list("a" = sum(data$cope.eat)/sum(data$cope.start), 
+                           "h" = 1/100)
+
+
+# redefine the function b/c taking log functions on a & h,
+# so transform them to keep within a sensible range
+holling2bound <- function(N, a, h){
+  a <- plogis(a)
+  h <- exp(h)
+  p <- a/(1 + a*h*N)
+  return(p)
+}
+
+# now redefine nllH2Binom to use the new function.
+nllH2boundBinom <- function(a, h, m, N){
+  p <- (holling2bound(N=N, a=a, h=h)) ## get the predicted probability 
+  lL <- dbinom(x = m, prob = p, size = N, log=T)
+  nlL <- -sum(lL)
+  return(nlL)}
+
+# transform starting parameters
+cladostartpars2.mle2 <- list(a=qlogis(cladostartpars.mle2$a), h=log(cladostartpars.mle2$h))
+copestartpars2.mle2 <- list(a=qlogis(copestartpars.mle2$a), h=log(copestartpars.mle2$h))
+ostrstartpars2.mle2 <- list(a=qlogis(ostrstartpars.mle2$a), h=log(ostrstartpars.mle2$h))
+
+# calculate fits using mle2
+fit2.clado2 <- mle2(nllH2boundBinom, start=cladostartpars2.mle2, 
+                  data=data.frame(N=data$clado.start, m=data$clado.eat)) 
+fit2.cope2 <- mle2(nllH2boundBinom, start=copestartpars2.mle2, 
+                   data=data.frame(N=data$cope.start, m=data$cope.eat)) 
+fit2.ostr2 <- mle2(nllH2boundBinom, start=ostrstartpars2.mle2, 
+                   data=data.frame(N=data$ostr.start, m=data$ostr.eat)) 
+
+coef(fit2.clado2)
+plogis(coef(fit2.clado2)['a'])
+exp(coef(fit2.clado2)['h'])
+fit2.clado$par # for comparison w/ optim()
+
+coef(fit2.cope2)
+plogis(coef(fit2.cope2)['a'])
+exp(coef(fit2.cope2)['h'])
+fit2.cope$par # for comparison w/ optim()
+
+coef(fit2.ostr2)
+plogis(coef(fit2.ostr2)['a'])
+exp(coef(fit2.ostr2)['h'])
+fit2.ostr$par # for comparison w/ optim()
+@
+
+This is as far as I can get my code to work. Applying the profile() function to the new fitted models gives me a notification that a better fit was found, but then querying confint() on the even newer model prods RStudio to tell me my Hessian is ill-behaved. That seems unduly harsh and judgmental, RStudio. Whenceforth from here?
+
+
+\end{document}
